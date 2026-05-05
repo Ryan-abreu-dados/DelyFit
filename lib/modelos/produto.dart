@@ -5,6 +5,7 @@ class Produto {
   final String imagem;
   final String macros; // Novo campo
   final String descricao; // Novo campo
+  final String categoria;
 
   Produto({
     required this.nome,
@@ -12,5 +13,6 @@ class Produto {
     required this.imagem,
     required this.macros,
     required this.descricao,
+    required this.categoria,
   });
 }
