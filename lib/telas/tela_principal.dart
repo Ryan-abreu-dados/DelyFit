@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../modelos/produto.dart';
 import '../modelos/produtos_exemplo.dart';
 import 'tela_cardapio.dart';
+import 'tela_chat.dart';
 
 class TelaPrincipal extends StatefulWidget {
   const TelaPrincipal({super.key});
@@ -515,6 +516,14 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
             );
           },
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const TelaChat()));
+        },
+        backgroundColor: Colors.deepOrange,
+        icon: const Icon(Icons.chat, color: Colors.white),
+        label: const Text('Chat', style: TextStyle(color: Colors.white)),
       ),
     );
   }
