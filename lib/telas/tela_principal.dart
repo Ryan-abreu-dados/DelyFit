@@ -5,6 +5,9 @@ import '../modelos/produto.dart';
 import '../modelos/produtos_exemplo.dart';
 import 'tela_cardapio.dart';
 import 'tela_chat.dart';
+import 'tela_checkout.dart';
+import 'tela_historico.dart';
+import '../modelos/carrinho.dart';
 
 class TelaPrincipal extends StatefulWidget {
   const TelaPrincipal({super.key});
@@ -20,7 +23,6 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
   final PageController _heroController = PageController(viewportFraction: 0.82);
   late final Timer _heroTimer;
 
-  final List<String> _menuItems = ['Home', 'Cardápio', 'Carrinho'];
   final List<String> _categories = ['Todos', 'Low Carb', 'Vegano'];
   int _hoveredMenuIndex = -1;
   int _selectedCategoryIndex = 0;
@@ -107,37 +109,100 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
           ),
         ],
       ),
-      actions: _menuItems.asMap().entries.map((entry) {
-        final index = entry.key;
-        final label = entry.value;
-        final selected = _hoveredMenuIndex == index;
-        return MouseRegion(
-          onEnter: (_) => setState(() => _hoveredMenuIndex = index),
+      actions: [
+        // Home
+        MouseRegion(
+          onEnter: (_) => setState(() => _hoveredMenuIndex = 0),
+          onExit: (_) => setState(() => _hoveredMenuIndex = -1),
+          cursor: SystemMouseCursors.click,
+          child: TextButton(
+            onPressed: () => _scrollTo(_heroKey),
+            style: TextButton.styleFrom(
+              foregroundColor: _hoveredMenuIndex == 0 ? Colors.deepOrange : Colors.black54,
+            ),
+            child: Text('Home',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: _hoveredMenuIndex == 0 ? FontWeight.w700 : FontWeight.w500)),
+          ),
+        ),
+        // Cardápio
+        MouseRegion(
+          onEnter: (_) => setState(() => _hoveredMenuIndex = 1),
+          onExit: (_) => setState(() => _hoveredMenuIndex = -1),
+          cursor: SystemMouseCursors.click,
+          child: TextButton(
+            onPressed: () => _scrollTo(_cardapioKey),
+            style: TextButton.styleFrom(
+              foregroundColor: _hoveredMenuIndex == 1 ? Colors.deepOrange : Colors.black54,
+            ),
+            child: Text('Cardápio',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: _hoveredMenuIndex == 1 ? FontWeight.w700 : FontWeight.w500)),
+          ),
+        ),
+        // Histórico
+        MouseRegion(
+          onEnter: (_) => setState(() => _hoveredMenuIndex = 2),
           onExit: (_) => setState(() => _hoveredMenuIndex = -1),
           cursor: SystemMouseCursors.click,
           child: TextButton(
             onPressed: () {
-              if (label == 'Home') {
-                _scrollTo(_heroKey);
-              } else if (label == 'Cardápio') {
-                _scrollTo(_cardapioKey);
-              } else {
-                _scrollTo(_cardapioKey);
-              }
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const TelaHistorico()));
             },
             style: TextButton.styleFrom(
-              foregroundColor: selected ? Colors.deepOrange : Colors.black54,
+              foregroundColor: _hoveredMenuIndex == 2 ? Colors.deepOrange : Colors.black54,
             ),
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-              ),
-            ),
+            child: Text('Histórico',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: _hoveredMenuIndex == 2 ? FontWeight.w700 : FontWeight.w500)),
           ),
-        );
-      }).toList(),
+        ),
+        // Carrinho com badge
+        ValueListenableBuilder<int>(
+          valueListenable: Carrinho.contador,
+          builder: (context, count, _) {
+            return Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const TelaCheckout()));
+                  },
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Icon(Icons.shopping_cart_outlined, color: Colors.black54, size: 28),
+                      ),
+                      if (count > 0)
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Colors.deepOrange,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              '$count',
+                              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 
